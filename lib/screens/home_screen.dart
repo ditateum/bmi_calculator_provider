@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/gender_button.dart';
 import '../widgets/indicator_button.dart';
+import '../widgets/indicator_height.dart';
+import '../providers/bmi.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -9,6 +12,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final bmi = Provider.of<BmiProvider>(context);
+    bool gender = bmi.gender;
 
     return Scaffold(
       appBar: AppBar(
@@ -27,46 +32,70 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(
                     width: size.width,
                     height: size.height / 4,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GenderButton(
-                          gender: 'MALE',
-                          size: size,
-                          iconGender: Icons.male,
-                          onClick: () {},
-                        ),
-                        GenderButton(
-                          gender: 'FEMALE',
-                          size: size,
-                          iconGender: Icons.female,
-                          onClick: () {},
-                        ),
-                      ],
+                    child: Consumer<BmiProvider>(
+                      builder: (context, value, _) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GenderButton(
+                            gender: 'MALE',
+                            size: size,
+                            iconGender: Icon(
+                              Icons.male,
+                              color: gender ? Colors.purple : Colors.white,
+                              size: 60.0,
+                            ),
+                            onClick: () {
+                              value.chooseGender();
+                            },
+                          ),
+                          GenderButton(
+                            gender: 'FEMALE',
+                            size: size,
+                            iconGender: Icon(
+                              Icons.female,
+                              color: gender ? Colors.white : Colors.purple,
+                              size: 60.0,
+                            ),
+                            onClick: () {
+                              value.chooseGender();
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   HeightIndicator(size: size),
                   SizedBox(
                     width: size.width,
                     height: size.height / 3.5,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IndicatorButton(
-                          size: size,
-                          indicator: 'WEIGHT',
-                          value: 0,
-                          addButton: () {},
-                          minusButton: () {},
-                        ),
-                        IndicatorButton(
-                          size: size,
-                          indicator: 'AGE',
-                          value: 0,
-                          addButton: () {},
-                          minusButton: () {},
-                        ),
-                      ],
+                    child: Consumer<BmiProvider>(
+                      builder: (context, value, _) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IndicatorButton(
+                            size: size,
+                            indicator: 'WEIGHT (Kg)',
+                            value: value.weight,
+                            addButton: () {
+                              value.addWeight();
+                            },
+                            minusButton: () {
+                              value.minusWeight();
+                            },
+                          ),
+                          IndicatorButton(
+                            size: size,
+                            indicator: 'AGE',
+                            value: value.age,
+                            addButton: () {
+                              value.addAge();
+                            },
+                            minusButton: () {
+                              value.minusAge();
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -78,7 +107,43 @@ class HomeScreen extends StatelessWidget {
             height: 45,
             color: Theme.of(context).colorScheme.primary,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return Consumer<BmiProvider>(
+                        builder: (context, value, _) => Container(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Your BMI: ${value.calculateBmi.toStringAsFixed(1)}",
+                                style: const TextStyle(
+                                  fontSize: 24.0,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                              Text(
+                                'Your category: ${value.categoryBmi}',
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                ),
+                              ),
+                              const Divider(),
+                              Text('Your age: ${value.age}'),
+                              const Divider(),
+                              Text(
+                                'Your gender: ${value.gender ? 'Male' : 'Female'}',
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    });
+              },
               child: Text(
                 'Calculate your BMI',
                 style: TextStyle(
@@ -86,56 +151,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HeightIndicator extends StatelessWidget {
-  HeightIndicator({
-    Key? key,
-    required this.size,
-  }) : super(key: key);
-
-  final Size size;
-  double value = 100;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size.width,
-      height: size.height / 5,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xff272A4E),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          const Text(
-            'Height',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(
-            height: 2,
-          ),
-          Text(
-            '${value.round()}cm',
-            style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Slider(
-            value: value,
-            min: 0,
-            max: 200,
-            onChanged: (newWalue) {},
           ),
         ],
       ),

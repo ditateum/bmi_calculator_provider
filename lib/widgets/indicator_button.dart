@@ -12,7 +12,7 @@ class IndicatorButton extends StatelessWidget {
 
   final Size size;
   final String indicator;
-  final int value;
+  final double value;
   final Function() addButton;
   final Function() minusButton;
 
@@ -37,7 +37,7 @@ class IndicatorButton extends StatelessWidget {
             ),
           ),
           Text(
-            '$value',
+            '${value.round()}',
             style: const TextStyle(
               fontSize: 42,
               fontWeight: FontWeight.bold,
@@ -58,7 +58,7 @@ class IndicatorButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(18.0),
                 ),
                 child: IconButton(
-                  onPressed: addButton,
+                  onPressed: minusButton,
                   icon: const Icon(
                     Icons.remove,
                   ),
@@ -76,7 +76,7 @@ class IndicatorButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(18.0),
                 ),
                 child: IconButton(
-                  onPressed: minusButton,
+                  onPressed: addButton,
                   icon: const Center(
                     child: Icon(
                       Icons.add,

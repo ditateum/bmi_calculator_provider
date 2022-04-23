@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/bmi.dart';
 
 class GenderButton extends StatelessWidget {
   const GenderButton({
@@ -11,39 +14,41 @@ class GenderButton extends StatelessWidget {
 
   final Size size;
   final Function() onClick;
-  final IconData iconGender;
+  final Widget iconGender;
   final String gender;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: size.width * 0.870 / 2,
-      height: size.height / 5,
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: const Color(0xff272A4E),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-            onPressed: onClick,
-            icon: Icon(
-              iconGender,
-              size: 60.0,
+    return InkWell(
+      onTap: onClick,
+      child: Container(
+        alignment: Alignment.center,
+        width: size.width * 0.870 / 2,
+        height: size.height / 5,
+        padding: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: const Color(0xff272A4E),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Consumer<BmiProvider>(
+              builder: (context, value, _) => IconButton(
+                onPressed: onClick,
+                icon: iconGender,
+              ),
             ),
-          ),
-          Text(
-            gender,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            Text(
+              gender,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
